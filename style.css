@@ -3,8 +3,7 @@
     --text-color: #111111;
     --accent-color: #007aff;
     --gallery-bg: #fafafa;
-    --nav-bg: rgba(255, 255, 255, 0.8);
-    --card-bg: rgba(136, 136, 136, 0.08);
+    --nav-bg: rgba(255, 255, 255, 0.9);
     --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -13,144 +12,70 @@
     --text-color: #f5f5f7;
     --accent-color: #5e5ce6;
     --gallery-bg: #121212;
-    --nav-bg: rgba(10, 10, 10, 0.8);
-    --card-bg: rgba(255, 255, 255, 0.05);
+    --nav-bg: rgba(10, 10, 10, 0.9);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
     line-height: 1.6;
-    transition: background-color 0.4s, color 0.4s;
+    overflow-x: hidden;
 }
 
-/* Навігація */
 nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem 5%;
-    position: sticky;
-    top: 0;
-    background: var(--nav-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    z-index: 1000;
-    border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 5%; position: sticky; top: 0;
+    background: var(--nav-bg); backdrop-filter: blur(10px);
+    z-index: 1000; border-bottom: 1px solid rgba(128,128,128,0.1);
 }
 
-.logo { font-weight: 800; letter-spacing: 2px; font-size: 1.2rem; }
 .nav-links { display: flex; list-style: none; gap: 2rem; }
-.nav-links a { text-decoration: none; color: var(--text-color); font-size: 0.9rem; font-weight: 500; opacity: 0.7; transition: 0.3s; }
+.nav-links a { text-decoration: none; color: var(--text-color); font-weight: 500; opacity: 0.7; }
 .nav-links a:hover { opacity: 1; color: var(--accent-color); }
 
-#theme-toggle {
-    background: none; border: none; color: var(--text-color);
-    cursor: pointer; font-size: 1.2rem; transition: transform 0.3s, color 0.3s;
-    padding: 5px;
-}
-#theme-toggle:hover { transform: rotate(15deg); color: var(--accent-color); }
+#theme-toggle { background: none; border: none; cursor: pointer; color: var(--text-color); font-size: 1.2rem; }
 
-/* Про мене */
-header {
-    height: 70vh; display: flex; align-items: center;
-    justify-content: center; text-align: center; padding: 0 10%;
-}
+header { height: 60vh; display: flex; align-items: center; justify-content: center; text-align: center; }
 
-h1 { font-size: clamp(2.5rem, 8vw, 4rem); margin-bottom: 1rem; font-weight: 700; }
-header p { max-width: 600px; opacity: 0.8; font-size: 1.1rem; margin: 0 auto; }
-
-.socials { margin-top: 2rem; font-size: 1.5rem; }
-.socials a { color: var(--text-color); margin: 0 15px; transition: 0.3s; display: inline-block; }
-.socials a:hover { color: var(--accent-color); transform: translateY(-3px); }
-
-/* Галереї */
-.gallery-section { padding: 6rem 5%; background-color: var(--gallery-bg); transition: background-color 0.4s; }
-.gallery-section h2 {
-    margin-bottom: 3rem; text-align: center; font-size: 2rem;
-    font-weight: 300; letter-spacing: 3px; text-transform: uppercase;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 30px; max-width: 1400px; margin: 0 auto;
+.gallery-section { padding: 4rem 5%; background: var(--gallery-bg); }
+.grid { 
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    gap: 20px; max-width: 1200px; margin: 0 auto; 
 }
 
 .item {
-    position: relative; background: var(--card-bg);
-    border-radius: 16px; overflow: hidden; aspect-ratio: 4/5;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(128, 128, 128, 0.05);
+    background: rgba(128,128,128,0.05);
+    border-radius: 12px; overflow: hidden; aspect-ratio: 1/1;
+    will-change: transform, opacity; /* Оптимізація для відеокарти */
+    transform: translateZ(0);
 }
 
 .item img {
     width: 100%; height: 100%; object-fit: cover;
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); cursor: zoom-in;
+    cursor: zoom-in; transition: transform 0.5s ease;
 }
 
-.item:hover img { transform: scale(1.05); }
+.item img:hover { transform: scale(1.05); }
 
-.item::after {
-    content: "Переглянути"; position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%); background: rgba(255, 255, 255, 0.95);
-    color: #000; padding: 10px 22px; border-radius: 30px; font-size: 0.85rem;
-    font-weight: 600; opacity: 0; transition: var(--transition); pointer-events: none;
+/* Анімація появи */
+.reveal {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
 }
-.item:hover::after { opacity: 1; }
 
-/* Індикатор завантаження */
-.loader { grid-column: 1/-1; text-align: center; opacity: 0.5; padding: 2rem; font-size: 1.1rem; }
-
-/* Lightbox (Модальне вікно для фото) */
-#lightbox {
-    position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.9); display: none; align-items: center;
-    justify-content: center; cursor: zoom-out; opacity: 0; transition: opacity 0.3s ease;
-}
-#lightbox.show { display: flex; opacity: 1; }
-#lightbox img { max-width: 90%; max-height: 90vh; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); object-fit: contain; }
-
-/* Анімація появи (Scroll Reveal) */
-.reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
 .reveal.active { opacity: 1; transform: translateY(0); }
 
-.item.reveal { opacity: 0; transform: translateY(20px) scale(0.95); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-.item.active { opacity: 1; transform: translateY(0) scale(1); }
-
-/* Кастомний скроллбар */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg-color); }
-::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
-
-footer { padding: 4rem; text-align: center; opacity: 0.5; font-size: 0.85rem; }
-footer a { color: var(--text-color); text-decoration: underline; transition: 0.3s; }
-footer a:hover { color: var(--accent-color); }
-
-/* Адаптивність */
-@media (max-width: 768px) {
-    .nav-links { display: none; }
-    header { height: 60vh; }
-    .grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-    .logo { font-size: 1rem; }
+/* Lightbox */
+#lightbox {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95); z-index: 2000;
+    display: none; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.3s ease;
 }
+#lightbox.show { opacity: 1; }
+#lightbox img { max-width: 90%; max-height: 90%; border-radius: 4px; }
 
-@media (max-width: 480px) {
-    .grid { grid-template-columns: 1fr; gap: 15px; }
-}
-
-.item img {
-    will-change: transform; /* Підказує браузеру готувати відеокарту для анімації */
-    backface-visibility: hidden;
-}
+footer { padding: 3rem; text-align: center; opacity: 0.5; font-size: 0.8rem; }
