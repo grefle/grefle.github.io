@@ -149,3 +149,8 @@ footer a:hover { color: var(--accent-color); }
 @media (max-width: 480px) {
     .grid { grid-template-columns: 1fr; gap: 15px; }
 }
+
+.item img {
+    will-change: transform; /* Підказує браузеру готувати відеокарту для анімації */
+    backface-visibility: hidden;
+}
