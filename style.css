@@ -1,75 +1,84 @@
 :root {
-    --bg-color: #f8faf5;
+    --bg-color: #ffffff;
     --text-color: #1a1a1a;
-    --accent-yellow: #ffee58;
-    --accent-green: #66bb6a;
-    --cursor-color: rgba(102, 187, 106, 0.4);
-    --transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    --main-yellow: #FFD700; /* Насичений золотий жовтий */
+    --light-yellow: #FFF9C4;
+    --accent-green: #4CAF50;
+    --nav-bg: rgba(255, 255, 255, 0.95);
+    --transition: all 0.3s ease;
 }
 
 [data-theme="dark"] {
-    --bg-color: #0b0d0b;
-    --text-color: #e0e0e0;
-    --accent-yellow: #fdd835;
-    --accent-green: #43a047;
-    --cursor-color: rgba(253, 216, 53, 0.3);
+    --bg-color: #121212;
+    --text-color: #f5f5f5;
+    --main-yellow: #FFEA00;
+    --light-yellow: #333000;
+    --nav-bg: rgba(18, 18, 18, 0.95);
 }
 
-* { cursor: none !important; } /* Ховаємо стандартний курсор */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
-    transition: var(--transition);
+    line-height: 1.6;
 }
 
-/* Кастомний курсор */
-#cursor {
-    width: 30px; height: 30px;
-    background: var(--cursor-color);
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    transition: transform 0.15s ease-out;
-    backdrop-filter: blur(2px);
+/* Навігація */
+nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 5%; position: sticky; top: 0;
+    background: var(--nav-bg); border-bottom: 3px solid var(--main-yellow);
+    z-index: 1000;
 }
 
-/* Привітання за часом */
-.time-greeting {
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    color: var(--accent-green);
-    margin-bottom: 10px;
-    font-weight: 700;
+.logo { font-size: 1.5rem; font-weight: 800; color: var(--text-color); }
+.logo .dot { color: var(--main-yellow); }
+
+.nav-links { display: flex; list-style: none; gap: 2rem; }
+.nav-links a { text-decoration: none; color: var(--text-color); font-weight: 600; }
+.nav-links a:hover { color: var(--main-yellow); }
+
+/* Хедер */
+header { height: 50vh; display: flex; align-items: center; justify-content: center; text-align: center; background: var(--light-yellow); color: #1a1a1a; }
+[data-theme="dark"] header { color: var(--text-color); }
+
+.yellow-text { color: var(--main-yellow); text-shadow: 1px 1px 0px #000; }
+.green-text { color: var(--accent-green); }
+
+/* Галерея */
+.gallery-section { padding: 4rem 5%; }
+h2 { text-align: center; margin-bottom: 3rem; font-size: 2.2rem; }
+.underlined { border-bottom: 5px solid var(--main-yellow); }
+
+.grid { 
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 25px; max-width: 1200px; margin: 0 auto; 
 }
 
-/* Ефект підсвічування тексту */
-.highlight-yellow {
-    background: linear-gradient(120deg, var(--accent-yellow) 0%, var(--accent-yellow) 100%);
-    background-repeat: no-repeat;
-    background-size: 100% 0.3em;
-    background-position: 0 88%;
-}
-
-/* Оптимізована сітка */
 .item {
-    border-radius: 20px;
-    background: var(--bg-color);
-    border: 1px solid rgba(128, 128, 128, 0.1);
-    box-shadow: 10px 10px 20px rgba(0,0,0,0.02);
-    transition: var(--transition);
+    border-radius: 12px; overflow: hidden; aspect-ratio: 1/1;
+    border: 2px solid transparent; transition: var(--transition);
+    background: #eee;
 }
 
 .item:hover {
-    transform: scale(1.02) rotate(1deg);
-    border-color: var(--accent-yellow);
-    box-shadow: 15px 15px 30px rgba(0,0,0,0.05);
+    transform: translateY(-8px);
+    border-color: var(--main-yellow);
+    box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
 }
 
-.item img { border-radius: 18px; }
+.item img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Плавний скрол */
-html { scroll-behavior: smooth; }
+/* Кнопка теми */
+#theme-toggle {
+    background: var(--main-yellow); border: none; padding: 10px;
+    border-radius: 50%; cursor: pointer; font-size: 1.1rem;
+}
+
+/* Анімація */
+.reveal { opacity: 0; transform: translateY(30px); transition: 0.6s ease-out; }
+.reveal.active { opacity: 1; transform: translateY(0); }
+
+footer { padding: 3rem; text-align: center; background: var(--light-yellow); margin-top: 4rem; color: #1a1a1a; }
