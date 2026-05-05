@@ -1,87 +1,67 @@
 const CLOUD_NAME = 'grefle';
-let scrollObserver;
 
-/**
- * 1. ЛОГІКА КУРСОРУ
- */
-const cursor = document.getElementById('cursor');
-document.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX - 15 + 'px';
-    cursor.style.top = e.clientY - 15 + 'px';
-});
+// Функція анімації появи елементів
+function initScrollReveal() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
 
-// Ефект при наведенні на посилання
-document.querySelectorAll('a, button, .item').forEach(el => {
-    el.addEventListener('mouseenter', () => cursor.style.transform = 'scale(2)');
-    el.addEventListener('mouseleave', () => cursor.style.transform = 'scale(1)');
-});
-
-/**
- * 2. ПРИВІТАННЯ ЗА ЧАСОМ ДОБИ
- */
-function updateGreeting() {
-    const hour = new Date().getHours();
-    const greetingEl = document.getElementById('greeting');
-    if (hour < 6) greetingEl.innerText = "Доброї ночі";
-    else if (hour < 12) greetingEl.innerText = "Доброго ранку";
-    else if (hour < 18) greetingEl.innerText = "Доброго дня";
-    else greetingEl.innerText = "Доброго вечора";
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    return observer;
 }
 
-/**
- * 3. ОСНОВНІ ФУНКЦІЇ (Оптимізовані)
- */
-async function loadGallery(tag, containerId) {
+// Завантаження фото
+async function loadGallery(tag, containerId, observer) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
     try {
         const response = await fetch(`https://res.cloudinary.com/${CLOUD_NAME}/image/list/${tag}.json`);
         const data = await response.json();
+        
         container.innerHTML = '';
 
-        data.resources.forEach((resource, index) => {
+        data.resources.forEach(resource => {
             const div = document.createElement('div');
             div.className = 'item reveal';
             
-            const previewUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,w_700,h_700,f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
+            // Оптимізоване посилання (ширина 800px)
+            const url = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_scale,w_800,f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
             
-            div.innerHTML = `<img src="${previewUrl}" loading="lazy" alt="Art">`;
+            div.innerHTML = `<img src="${url}" loading="lazy">`;
             
-            // Клік для Lightbox
-            div.addEventListener('click', () => {
-                const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
-                window.open(fullUrl, '_blank'); // Тимчасовий варіант або ваш Lightbox
-            });
+            // Відкриття оригіналу в новій вкладці
+            div.onclick = () => window.open(`https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`, '_blank');
 
             container.appendChild(div);
-            scrollObserver.observe(div);
+            observer.observe(div);
         });
-    } catch (err) { console.error(err); }
+    } catch (e) {
+        console.error("Помилка завантаження:", e);
+    }
 }
 
-function initScrollReveal() {
-    return new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-                entry.target.style.opacity = "1";
-            }
-        });
-    }, { threshold: 0.1 });
+// Зміна теми
+function setupTheme() {
+    const btn = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+    
+    btn.onclick = () => {
+        const current = html.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    };
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateGreeting();
-    scrollObserver = initScrollReveal();
-    loadGallery('photos', 'photos-grid');
-    loadGallery('artworks', 'drawings-grid');
-    
-    // Перемикач теми
-    document.getElementById('theme-toggle').onclick = () => {
-        const html = document.documentElement;
-        const isDark = html.getAttribute('data-theme') === 'dark';
-        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-        localStorage.setItem('theme', isDark ? 'light' : 'dark');
-    };
+    setupTheme();
+    const observer = initScrollReveal();
+    loadGallery('photos', 'photos-grid', observer);
+    loadGallery('artworks', 'drawings-grid', observer);
 });
