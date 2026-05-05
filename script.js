@@ -85,8 +85,10 @@ async function loadGallery(tag, containerId) {
             // Каскадна затримка для ефекту хвилі
             div.style.transitionDelay = `${(index % 10) * 0.1}s`; 
             
-            // Формуємо URL з авто-оптимізацією якості та формату
-            const imageUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
+            // c_scale,w_800 — автоматично стискає ширину до 800px (цього достатньо для сітки)
+            // f_auto — вибирає найсучасніший формат (WebP), який важить у 5 разів менше за JPG
+            // q_auto — підбирає ідеальний баланс якості, щоб око не бачило пікселів, а файл важив мало
+            const imageUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_scale,w_800,f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
             
             const img = document.createElement('img');
             img.src = imageUrl;
