@@ -97,3 +97,28 @@ header { height: 65vh; display: flex; align-items: center; justify-content: cent
 #theme-toggle { background: var(--accent-yellow); border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer; color: #000; }
 
 footer { padding: 4rem; background: var(--bg-color); border-top: 1px solid var(--accent-yellow); text-align: center; opacity: 0.6; }
+
+#lightbox {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: none; /* Ховаємо спочатку */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    cursor: zoom-out;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#lightbox.show {
+    opacity: 1;
+}
+
+#lightbox img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
