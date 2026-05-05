@@ -3,28 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grefle Portfolio | Digital Art</title>
+    <title>Grefle Portfolio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Кастомний курсор -->
-    <div id="cursor"></div>
 
     <nav>
         <div class="logo">GREFLE<span class="dot">.</span></div>
         <ul class="nav-links">
-            <li><a href="#photos">Фото</a></li>
+            <li><a href="#photos">Фотографії</a></li>
             <li><a href="#drawings">Малюнки</a></li>
         </ul>
-        <button id="theme-toggle"><i class="fas fa-sun"></i></button>
+        <button id="theme-toggle" title="Змінити тему">
+            <i class="fas fa-sun"></i>
+        </button>
     </nav>
 
-    <header id="about">
+    <header>
         <div class="header-content reveal">
-            <div class="time-greeting" id="greeting">Добрий день</div>
-            <h1>Привіт, я <span class="highlight-yellow">Grefle</span></h1>
-            <p>Творець візуальних історій. Кожне фото та лінія — це <span class="highlight-green">окрема емоція</span>, зафіксована в цифрі.</p>
+            <h1>Привіт, я <span class="yellow-text">Grefle</span></h1>
+            <p>Візуальний митець. Створюю цифрову магію з акцентом на <span class="green-text">мінімалізм</span>.</p>
             <div class="socials">
                 <a href="#"><i class="fab fa-instagram"></i></a>
                 <a href="mailto:grefle.art@gmail.com"><i class="fas fa-envelope"></i></a>
@@ -33,14 +32,18 @@
     </header>
 
     <section id="photos" class="gallery-section">
-        <h2 class="reveal">Естетика кадру</h2>
+        <h2 class="reveal">Мої <span class="underlined">Фото</span></h2>
         <div class="grid" id="photos-grid"></div>
     </section>
 
     <section id="drawings" class="gallery-section">
-        <h2 class="reveal">Цифрові полотна</h2>
+        <h2 class="reveal">Мої <span class="underlined">Малюнки</span></h2>
         <div class="grid" id="drawings-grid"></div>
     </section>
+
+    <footer>
+        <p>&copy; 2026 Grefle. Зроблено з любов'ю та жовтим настроєм.</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>
