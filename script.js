@@ -1,21 +1,27 @@
-const CLOUD_NAME = 'grefle';
+const CLOUD_NAME = 'grefle'; // Твій Cloud Name
 
 let scrollObserver;
 
+/**
+ * Оптимізована анімація появи
+ */
 function initScrollReveal() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('active');
-                observer.unobserve(entry.target);
+                observer.unobserve(entry.target); // Зупиняємо стеження після появи
             }
         });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.05 });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     return observer;
 }
 
+/**
+ * Lightbox
+ */
 function createLightbox() {
     const lightbox = document.createElement('div');
     lightbox.id = 'lightbox';
@@ -32,6 +38,9 @@ function createLightbox() {
 
 const { lightbox, lightboxImg } = createLightbox();
 
+/**
+ * Завантаження галереї з оптимізацією Cloudinary
+ */
 async function loadGallery(tag, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -40,7 +49,7 @@ async function loadGallery(tag, containerId) {
 
     try {
         const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error('Restricted');
+        if (!response.ok) throw new Error('Помилка доступу');
         
         const data = await response.json();
         container.innerHTML = '';
@@ -49,7 +58,7 @@ async function loadGallery(tag, containerId) {
             const div = document.createElement('div');
             div.className = 'item reveal';
             
-            // Стискання до 800px для швидкості
+            // ОПТИМІЗАЦІЯ: c_scale,w_800 стискає фото до 800px по ширині
             const previewUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_scale,w_800,f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
             const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
             
@@ -68,28 +77,24 @@ async function loadGallery(tag, containerId) {
             if(scrollObserver) scrollObserver.observe(div);
         });
     } catch (err) {
-        container.innerHTML = '<p style="padding:20px; opacity:0.5;">Налаштуйте теги та Security у Cloudinary</p>';
+        container.innerHTML = '<p style="opacity:0.5; text-align:center;">Увімкніть Resource List у Cloudinary</p>';
     }
 }
 
+/**
+ * Тема
+ */
 function initTheme() {
     const toggleBtn = document.querySelector('#theme-toggle');
-    const icon = toggleBtn.querySelector('i');
     const html = document.documentElement;
-    
-    const setTheme = (theme) => {
-        html.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-        // Зміна іконки
-        icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-    };
-
     const savedTheme = localStorage.getItem('theme') || 'light';
-    setTheme(savedTheme);
+    
+    html.setAttribute('data-theme', savedTheme);
 
     toggleBtn?.addEventListener('click', () => {
         const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        setTheme(next);
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
     });
 }
 
