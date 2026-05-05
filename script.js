@@ -74,14 +74,22 @@ async function loadGallery(tag, containerId) {
 
 function initTheme() {
     const toggleBtn = document.querySelector('#theme-toggle');
+    const icon = toggleBtn.querySelector('i');
     const html = document.documentElement;
+    
+    const setTheme = (theme) => {
+        html.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        // Зміна іконки
+        icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+    };
+
     const savedTheme = localStorage.getItem('theme') || 'light';
-    html.setAttribute('data-theme', savedTheme);
+    setTheme(savedTheme);
 
     toggleBtn?.addEventListener('click', () => {
         const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        html.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
+        setTheme(next);
     });
 }
 
