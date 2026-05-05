@@ -1,161 +1,106 @@
-/**
- * НАЛАШТУВАННЯ CLOUDINARY
- */
-const CLOUD_NAME = 'grefle'; 
+const CLOUD_NAME = 'grefle'; // Твій Cloud Name
 
-let scrollObserver; // Глобальна змінна для спостерігача скролу
+let scrollObserver;
 
 /**
- * Ініціалізація анімацій при гортанні
+ * Оптимізована анімація появи
  */
 function initScrollReveal() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('active');
+                observer.unobserve(entry.target); // Зупиняємо стеження після появи
             }
         });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.05 });
 
-    // Спостерігаємо за статичними елементами сторінки
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     return observer;
 }
 
 /**
- * Створення Lightbox (повноекранний перегляд зображень)
+ * Lightbox
  */
 function createLightbox() {
     const lightbox = document.createElement('div');
     lightbox.id = 'lightbox';
-    
     const img = document.createElement('img');
     lightbox.appendChild(img);
     document.body.appendChild(lightbox);
 
-    // Закриття по кліку будь-де
     lightbox.addEventListener('click', () => {
         lightbox.classList.remove('show');
-        // Чекаємо завершення CSS-анімації перед приховуванням
-        setTimeout(() => {
-            if (!lightbox.classList.contains('show')) {
-                lightbox.style.display = 'none';
-            }
-        }, 300);
+        setTimeout(() => lightbox.style.display = 'none', 300);
     });
-    
     return { lightbox, lightboxImg: img };
 }
 
 const { lightbox, lightboxImg } = createLightbox();
 
 /**
- * Автоматичне підвантаження зображень через Cloudinary за тегом
+ * Завантаження галереї з оптимізацією Cloudinary
  */
 async function loadGallery(tag, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    container.innerHTML = '<div class="loader">Завантаження робіт...</div>';
-    
-    /**
-     * Важливо: Для роботи цього запиту у налаштуваннях Cloudinary 
-     * (Settings -> Security) має бути увімкнено "Resource list"
-     */
     const apiUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/list/${tag}.json`;
 
     try {
         const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error('Помилка завантаження з хмари');
+        if (!response.ok) throw new Error('Помилка доступу');
         
         const data = await response.json();
-        const resources = data.resources || [];
+        container.innerHTML = '';
 
-        container.innerHTML = ''; // Очищуємо лоадер
-
-        if (resources.length === 0) {
-            container.innerHTML = '<p style="grid-column: 1/-1; opacity: 0.5; text-align: center;">Тут поки порожньо...</p>';
-            return;
-        }
-
-        resources.forEach((resource, index) => {
+        data.resources.forEach((resource, index) => {
             const div = document.createElement('div');
             div.className = 'item reveal';
             
-            // Каскадна затримка для ефекту хвилі
-            div.style.transitionDelay = `${(index % 10) * 0.1}s`; 
-            
-            // c_scale,w_800 — автоматично стискає ширину до 800px (цього достатньо для сітки)
-            // f_auto — вибирає найсучасніший формат (WebP), який важить у 5 разів менше за JPG
-            // q_auto — підбирає ідеальний баланс якості, щоб око не бачило пікселів, а файл важив мало
-            const imageUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_scale,w_800,f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
+            // ОПТИМІЗАЦІЯ: c_scale,w_800 стискає фото до 800px по ширині
+            const previewUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_scale,w_800,f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
+            const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
             
             const img = document.createElement('img');
-            img.src = imageUrl;
-            img.alt = "Art by Grefle";
+            img.src = previewUrl;
             img.loading = "lazy";
             
-            // Логіка відкриття картинки
             img.addEventListener('click', () => {
-                lightboxImg.src = imageUrl;
+                lightboxImg.src = fullUrl;
                 lightbox.style.display = 'flex';
                 setTimeout(() => lightbox.classList.add('show'), 10);
             });
 
             div.appendChild(img);
             container.appendChild(div);
-            
-            // Передаємо нові елементи до обзервера, щоб вони анімувалися
-            if(scrollObserver) {
-                scrollObserver.observe(div);
-            }
+            if(scrollObserver) scrollObserver.observe(div);
         });
     } catch (err) {
-        console.error(`Не вдалося завантажити тег ${tag}:`, err);
-        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ff3b30; opacity: 0.8;">Помилка підключення до медіа-бази.</p>';
+        container.innerHTML = '<p style="opacity:0.5; text-align:center;">Увімкніть Resource List у Cloudinary</p>';
     }
 }
 
 /**
- * Перемикач світлої/темної теми
+ * Тема
  */
 function initTheme() {
     const toggleBtn = document.querySelector('#theme-toggle');
-    if (!toggleBtn) return;
-    
-    const icon = toggleBtn.querySelector('i');
     const html = document.documentElement;
-
-    // Читаємо збережену тему з браузера
     const savedTheme = localStorage.getItem('theme') || 'light';
+    
     html.setAttribute('data-theme', savedTheme);
-    updateIcon(savedTheme);
 
-    toggleBtn.addEventListener('click', () => {
-        const current = html.getAttribute('data-theme');
-        const next = current === 'light' ? 'dark' : 'light';
-        
+    toggleBtn?.addEventListener('click', () => {
+        const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
         html.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
-        updateIcon(next);
     });
-
-    function updateIcon(theme) {
-        if (icon) {
-            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-    }
 }
 
-// Головний запуск після повного завантаження HTML
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     scrollObserver = initScrollReveal();
-    
-    /**
-     * Замість шляхів до папок тепер використовуємо ТЕГИ, 
-     * які ви присвоїли файлам у Cloudinary
-     */
-    loadGallery('photos', 'photos-grid'); 
+    loadGallery('photos', 'photos-grid');
     loadGallery('artworks', 'drawings-grid');
 });
