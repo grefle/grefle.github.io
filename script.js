@@ -1,5 +1,7 @@
-const GITHUB_USERNAME = 'grefle';
-const GITHUB_REPO = 'grefle.github.io';
+/**
+ * НАЛАШТУВАННЯ CLOUDINARY
+ */
+const CLOUD_NAME = 'grefle'; 
 
 let scrollObserver; // Глобальна змінна для спостерігача скролу
 
@@ -48,50 +50,53 @@ function createLightbox() {
 const { lightbox, lightboxImg } = createLightbox();
 
 /**
- * Автоматичне підвантаження зображень через GitHub API
+ * Автоматичне підвантаження зображень через Cloudinary за тегом
  */
-async function loadGallery(folderPath, containerId) {
+async function loadGallery(tag, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
     container.innerHTML = '<div class="loader">Завантаження робіт...</div>';
-    const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${folderPath}`;
+    
+    /**
+     * Важливо: Для роботи цього запиту у налаштуваннях Cloudinary 
+     * (Settings -> Security) має бути увімкнено "Resource list"
+     */
+    const apiUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/list/${tag}.json`;
 
     try {
         const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error('Помилка API');
+        if (!response.ok) throw new Error('Помилка завантаження з хмари');
         
-        let files = await response.json();
-        
-        // Фільтруємо зображення і розвертаємо, щоб нові були першими
-        const imageFiles = files.filter(file => 
-            file.name.match(/\.(jpe?g|png|gif|webp|svg)$/i)
-        ).reverse();
+        const data = await response.json();
+        const resources = data.resources || [];
 
         container.innerHTML = ''; // Очищуємо лоадер
 
-        if (imageFiles.length === 0) {
+        if (resources.length === 0) {
             container.innerHTML = '<p style="grid-column: 1/-1; opacity: 0.5; text-align: center;">Тут поки порожньо...</p>';
             return;
         }
 
-        imageFiles.forEach((file, index) => {
+        resources.forEach((resource, index) => {
             const div = document.createElement('div');
             div.className = 'item reveal';
             
-            // Каскадна затримка для ефекту хвилі (макс. 1 секунда)
+            // Каскадна затримка для ефекту хвилі
             div.style.transitionDelay = `${(index % 10) * 0.1}s`; 
             
+            // Формуємо URL з авто-оптимізацією якості та формату
+            const imageUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
+            
             const img = document.createElement('img');
-            img.src = file.download_url;
+            img.src = imageUrl;
             img.alt = "Art by Grefle";
             img.loading = "lazy";
             
             // Логіка відкриття картинки
             img.addEventListener('click', () => {
-                lightboxImg.src = file.download_url;
+                lightboxImg.src = imageUrl;
                 lightbox.style.display = 'flex';
-                // Мінімальна затримка, щоб спрацював transition: opacity
                 setTimeout(() => lightbox.classList.add('show'), 10);
             });
 
@@ -104,8 +109,8 @@ async function loadGallery(folderPath, containerId) {
             }
         });
     } catch (err) {
-        console.error(`Не вдалося завантажити ${folderPath}:`, err);
-        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ff3b30; opacity: 0.8;">Не вдалося завантажити галерею. Спробуйте пізніше.</p>';
+        console.error(`Не вдалося завантажити тег ${tag}:`, err);
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ff3b30; opacity: 0.8;">Помилка підключення до медіа-бази.</p>';
     }
 }
 
@@ -134,7 +139,9 @@ function initTheme() {
     });
 
     function updateIcon(theme) {
-        icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        if (icon) {
+            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
     }
 }
 
@@ -142,6 +149,11 @@ function initTheme() {
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     scrollObserver = initScrollReveal();
-    loadGallery('images', 'photos-grid');
+    
+    /**
+     * Замість шляхів до папок тепер використовуємо ТЕГИ, 
+     * які ви присвоїли файлам у Cloudinary
+     */
+    loadGallery('photos', 'photos-grid'); 
     loadGallery('artworks', 'drawings-grid');
 });
