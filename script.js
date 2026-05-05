@@ -2,7 +2,7 @@ const CLOUD_NAME = 'grefle';
 let scrollObserver;
 
 /**
- * Анімація при скролі
+ * Анімація IntersectionObserver
  */
 function initScrollReveal() {
     const observer = new IntersectionObserver((entries) => {
@@ -12,14 +12,14 @@ function initScrollReveal() {
                 observer.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.15 });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     return observer;
 }
 
 /**
- * Lightbox логіка
+ * Lightbox
  */
 function createLightbox() {
     const lightbox = document.createElement('div');
@@ -30,7 +30,7 @@ function createLightbox() {
 
     lightbox.addEventListener('click', () => {
         lightbox.classList.remove('show');
-        setTimeout(() => lightbox.style.display = 'none', 300);
+        setTimeout(() => lightbox.style.display = 'none', 400);
     });
     return { lightbox, lightboxImg: img };
 }
@@ -38,7 +38,7 @@ function createLightbox() {
 const { lightbox, lightboxImg } = createLightbox();
 
 /**
- * Завантаження медіа
+ * Завантаження галереї Cloudinary
  */
 async function loadGallery(tag, containerId) {
     const container = document.getElementById(containerId);
@@ -48,7 +48,7 @@ async function loadGallery(tag, containerId) {
 
     try {
         const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error('Network error');
+        if (!response.ok) throw new Error('Cloudinary access error');
         const data = await response.json();
         
         container.innerHTML = '';
@@ -57,13 +57,14 @@ async function loadGallery(tag, containerId) {
             const div = document.createElement('div');
             div.className = 'item reveal';
             
-            // Оптимізовані прев'ю
-            const previewUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,w_600,h_600,g_auto,f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
+            // Прев'ю (квадратне стискання для сітки)
+            const previewUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,w_700,h_700,g_auto,f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
+            // Повне фото для лайтбоксу
             const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/v${resource.version}/${resource.public_id}.${resource.format}`;
             
             const img = document.createElement('img');
             img.src = previewUrl;
-            img.alt = resource.public_id;
+            img.alt = "Grefle Art Content";
             img.loading = "lazy";
             
             img.addEventListener('click', () => {
@@ -77,13 +78,13 @@ async function loadGallery(tag, containerId) {
             scrollObserver.observe(div);
         });
     } catch (err) {
-        console.warn("Cloudinary error:", err);
-        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; opacity:0.5;">Схоже, потрібно активувати Resource List в Cloudinary</p>';
+        console.error(err);
+        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; opacity:0.5;">Налаштуйте "Resource List" у Cloudinary Settings -> Security</p>';
     }
 }
 
 /**
- * Керування темою
+ * Логіка тем
  */
 function initTheme() {
     const toggleBtn = document.querySelector('#theme-toggle');
@@ -111,4 +112,14 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollObserver = initScrollReveal();
     loadGallery('photos', 'photos-grid');
     loadGallery('artworks', 'drawings-grid');
+    
+    // Ефект прозорості навігації при скролі
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('nav');
+        if (window.scrollY > 50) {
+            nav.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)';
+        } else {
+            nav.style.boxShadow = 'none';
+        }
+    });
 });
