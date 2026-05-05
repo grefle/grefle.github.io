@@ -3,53 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grefle Portfolio</title>
+    <title>Grefle Portfolio | Digital Art</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Кастомний курсор -->
+    <div id="cursor"></div>
 
     <nav>
-        <div class="logo">GREFLE</div>
+        <div class="logo">GREFLE<span class="dot">.</span></div>
         <ul class="nav-links">
-            <li><a href="#about">Про мене</a></li>
-            <li><a href="#photos">Фотографії</a></li>
+            <li><a href="#photos">Фото</a></li>
             <li><a href="#drawings">Малюнки</a></li>
         </ul>
-        <button id="theme-toggle" title="Змінити тему">
-            <i class="fas fa-moon"></i>
-        </button>
+        <button id="theme-toggle"><i class="fas fa-sun"></i></button>
     </nav>
 
     <header id="about">
         <div class="header-content reveal">
-            <h1>Привіт, я Grefle</h1>
-            <p>Візуальний митець та фотограф. Досліджую світ через цифрову графіку та об'єктив камери.</p>
+            <div class="time-greeting" id="greeting">Добрий день</div>
+            <h1>Привіт, я <span class="highlight-yellow">Grefle</span></h1>
+            <p>Творець візуальних історій. Кожне фото та лінія — це <span class="highlight-green">окрема емоція</span>, зафіксована в цифрі.</p>
             <div class="socials">
                 <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-behance"></i></a>
                 <a href="mailto:grefle.art@gmail.com"><i class="fas fa-envelope"></i></a>
             </div>
         </div>
     </header>
 
     <section id="photos" class="gallery-section">
-        <h2 class="reveal">Фотографії</h2>
-        <div class="grid" id="photos-grid">
-            <!-- Зображення з тегом 'photos' -->
-        </div>
+        <h2 class="reveal">Естетика кадру</h2>
+        <div class="grid" id="photos-grid"></div>
     </section>
 
     <section id="drawings" class="gallery-section">
-        <h2 class="reveal">Малюнки</h2>
-        <div class="grid" id="drawings-grid">
-            <!-- Зображення з тегом 'artworks' -->
-        </div>
+        <h2 class="reveal">Цифрові полотна</h2>
+        <div class="grid" id="drawings-grid"></div>
     </section>
-
-    <footer>
-        <p>&copy; 2026 Grefle. Хостинг на GitHub, Медіа на Cloudinary.</p>
-    </footer>
 
     <script src="script.js"></script>
 </body>
