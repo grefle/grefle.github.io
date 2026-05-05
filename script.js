@@ -1,7 +1,7 @@
 /**
  * НАЛАШТУВАННЯ CLOUDINARY
  */
-const CLOUD_NAME = 'grefle'; 
+const CLOUD_NAME = grefle; 
 
 let scrollObserver; // Глобальна змінна для спостерігача скролу
 
