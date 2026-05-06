@@ -1,5 +1,4 @@
 const CLOUD_NAME = 'grefle';
-
 const translations = {
     ua: {
         nav_about: "Про мене",
@@ -20,6 +19,31 @@ const translations = {
         footer: "© 2026 Grefle. Focused on visual purity."
     }
 };
+
+/** Мобільне меню **/
+function initMobileMenu() {
+    const menuToggle = document.getElementById('mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            const icon = menuToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+    }
+
+    // Закриття меню при кліку на посилання
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            const icon = menuToggle.querySelector('i');
+            icon.classList.add('fa-bars');
+            icon.classList.remove('fa-times');
+        });
+    });
+}
 
 /** Мова **/
 function initLanguage() {
@@ -99,7 +123,7 @@ async function loadGallery(tag, containerId, observer) {
             observer.observe(div);
         });
     } catch (e) {
-        container.innerHTML = '<p style="opacity:0.5">Enable Resource List in Cloudinary Settings</p>';
+        container.innerHTML = '<p style="opacity:0.5; grid-column: 1/-1; text-align:center;">Enable Resource List in Cloudinary Settings</p>';
     }
 }
 
@@ -119,6 +143,7 @@ function initTheme() {
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initLanguage();
+    initMobileMenu();
     const observer = initScrollReveal();
     loadGallery('photos', 'photos-grid', observer);
     loadGallery('artworks', 'drawings-grid', observer);
