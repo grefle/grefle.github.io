@@ -9,27 +9,35 @@
 </head>
 <body>
 
+    <!-- Інтерактивний фон -->
+    <div class="bg-visuals">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
     <nav>
         <div class="logo">GREFLE<span>.</span></div>
         <ul class="nav-links">
-            <li><a href="#about">Про мене</a></li>
-            <li><a href="#photos">Фотографії</a></li>
-            <li><a href="#drawings">Малюнки</a></li>
+            <li><a href="#about" data-i18n="nav_about">Про мене</a></li>
+            <li><a href="#photos" data-i18n="nav_photos">Фотографії</a></li>
+            <li><a href="#drawings" data-i18n="nav_drawings">Малюнки</a></li>
         </ul>
-        <button id="lang-toggle" class="lang-btn">EN</button>
-        <button id="theme-toggle" title="Змінити тему">
-            <i class="fas fa-moon"></i>
-        </button>
-
+        <div class="nav-controls">
+            <button id="lang-toggle" class="lang-btn">EN</button>
+            <button id="theme-toggle" title="Змінити тему">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
     </nav>
 
     <header id="about">
         <div class="header-content reveal">
-            <div class="badge">Visual Artist</div>
-            <h1>Привіт, я <span class="gradient-text">Grefle</span></h1>
-            <p>Досліджую світ крізь об'єктив та цифрові полотна в пошуках сенсу</p>
+            <div class="badge" data-i18n="badge">Visual Artist</div>
+            <h1><span data-i18n="hero_greet">Привіт, я</span> <span class="gradient-text">Grefle</span></h1>
+            <p data-i18n="hero_desc">Досліджую світ крізь об'єктив та цифрові полотна в пошуках сенсу</p>
             <div class="socials">
-                <a href="https://www.instagram.com/grefle" class="social-link"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.instagram.com/grefle" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
                 <a href="mailto:timesetday61@gmail.com" class="social-link"><i class="fas fa-envelope"></i></a>
             </div>
         </div>
@@ -37,26 +45,22 @@
 
     <section id="photos" class="gallery-section">
         <div class="section-header reveal">
-            <h2>Фотографії</h2>
+            <h2 data-i18n="nav_photos">Фотографії</h2>
             <div class="line"></div>
         </div>
-        <div class="grid" id="photos-grid">
-            <!-- Сюди скрипт додасть фото -->
-        </div>
+        <div class="grid" id="photos-grid"></div>
     </section>
 
     <section id="drawings" class="gallery-section">
         <div class="section-header reveal">
-            <h2>Малюнки</h2>
+            <h2 data-i18n="nav_drawings">Малюнки</h2>
             <div class="line"></div>
         </div>
-        <div class="grid" id="drawings-grid">
-            <!-- Сюди скрипт додасть малюнки -->
-        </div>
+        <div class="grid" id="drawings-grid"></div>
     </section>
 
     <footer>
-        <p>&copy; 2026 Grefle. Створено з акцентом на візуальну чистоту.</p>
+        <p data-i18n="footer">&copy; 2026 Grefle. Створено з акцентом на візуальну чистоту.</p>
     </footer>
 
     <script src="script.js"></script>
