@@ -2,14 +2,20 @@ const CLOUD_NAME = 'grefle';
 
 const translations = {
     ua: {
-        nav_about: "Про мене", nav_photos: "Фотографії", nav_drawings: "Малюнки",
-        badge: "Visual Artist", hero_greet: "Привіт, я",
+        nav_about: "Про мене",
+        nav_photos: "Фотографії",
+        nav_drawings: "Малюнки",
+        badge: "Visual Artist",
+        hero_greet: "Привіт, я",
         hero_desc: "Досліджую світ крізь об'єктив та цифрові полотна в пошуках сенсу",
         footer: "© 2026 Grefle. Створено з акцентом на візуальну чистоту."
     },
     en: {
-        nav_about: "About", nav_photos: "Photography", nav_drawings: "Artworks",
-        badge: "Visual Artist", hero_greet: "Hi, I'm",
+        nav_about: "About",
+        nav_photos: "Photography",
+        nav_drawings: "Artworks",
+        badge: "Visual Artist",
+        hero_greet: "Hi, I'm",
         hero_desc: "Exploring the world through lenses and digital canvases in search of meaning",
         footer: "© 2026 Grefle. Focused on visual purity."
     }
@@ -17,33 +23,50 @@ const translations = {
 
 /** Мова **/
 function initLanguage() {
-    const btn = document.querySelector('#lang-toggle');
-    let lang = localStorage.getItem('language') || 'ua';
-    const update = (l) => {
+    const langBtn = document.querySelector('#lang-toggle');
+    let currentLang = localStorage.getItem('language') || 'ua';
+
+    const updateText = (lang) => {
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
-            if (translations[l][key]) el.innerText = translations[l][key];
+            if (translations[lang][key]) el.innerText = translations[lang][key];
         });
-        btn.innerText = l === 'ua' ? 'EN' : 'UA';
-        localStorage.setItem('language', l);
+        langBtn.innerText = lang === 'ua' ? 'EN' : 'UA';
+        localStorage.setItem('language', lang);
     };
-    update(lang);
-    btn.onclick = () => { lang = lang === 'ua' ? 'en' : 'ua'; update(lang); };
+
+    updateText(currentLang);
+    langBtn.addEventListener('click', () => {
+        currentLang = currentLang === 'ua' ? 'en' : 'ua';
+        updateText(currentLang);
+    });
 }
 
-/** Lightbox з індикатором завантаження **/
+/** Анімація появи **/
+function initScrollReveal() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    return observer;
+}
+
+/** Lightbox **/
 const lightbox = document.createElement('div');
 lightbox.id = 'lightbox';
 const lightboxImg = document.createElement('img');
-const loader = document.createElement('div');
-loader.className = 'loader';
-lightbox.append(lightboxImg, loader);
+lightbox.appendChild(lightboxImg);
 document.body.appendChild(lightbox);
 
-lightbox.onclick = () => {
+lightbox.addEventListener('click', () => {
     lightbox.classList.remove('show');
     setTimeout(() => lightbox.style.display = 'none', 400);
-};
+});
 
 /** Галерея **/
 async function loadGallery(tag, containerId, observer) {
@@ -59,27 +82,16 @@ async function loadGallery(tag, containerId, observer) {
             const div = document.createElement('div');
             div.className = 'item reveal';
             
-            // Прев'ю (швидке завантаження)
-            const previewUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,w_800,h_800,g_auto,f_auto,q_auto/v${res.version}/${res.public_id}.${res.format}`;
-            // Оригінал (висока якість)
-            const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto:good/v${res.version}/${res.public_id}.${res.format}`;
+            const previewUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,w_700,h_700,g_auto,f_auto,q_auto/v${res.version}/${res.public_id}.${res.format}`;
+            const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/v${res.version}/${res.public_id}.${res.format}`;
             
             const img = document.createElement('img');
             img.src = previewUrl;
-            img.onload = () => img.classList.add('loaded');
-
-            img.onclick = (e) => {
-                e.stopPropagation();
-                lightbox.style.display = 'flex';
-                lightbox.classList.add('loading');
-                lightboxImg.style.opacity = '0';
-                
+            img.loading = "lazy";
+            img.onclick = () => {
                 lightboxImg.src = fullUrl;
-                lightboxImg.onload = () => {
-                    lightbox.classList.remove('loading');
-                    lightboxImg.style.opacity = '1';
-                    lightbox.classList.add('show');
-                };
+                lightbox.style.display = 'flex';
+                setTimeout(() => lightbox.classList.add('show'), 10);
             };
 
             div.appendChild(img);
@@ -87,22 +99,8 @@ async function loadGallery(tag, containerId, observer) {
             observer.observe(div);
         });
     } catch (e) {
-        container.innerHTML = '<p style="opacity:0.5; grid-column:1/-1; text-align:center;">Помилка Cloudinary: Resource List</p>';
+        container.innerHTML = '<p style="opacity:0.5">Enable Resource List in Cloudinary Settings</p>';
     }
-}
-
-/** Анімація Scroll **/
-function initScrollReveal() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-    return observer;
 }
 
 /** Тема **/
