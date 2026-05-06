@@ -68,7 +68,7 @@ lightbox.addEventListener('click', () => {
     setTimeout(() => lightbox.style.display = 'none', 400);
 });
 
-/** Галерея **/
+/** Галерея (З КОРЕКЦІЄЮ ЯКОСТІ) **/
 async function loadGallery(tag, containerId, observer) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -82,14 +82,19 @@ async function loadGallery(tag, containerId, observer) {
             const div = document.createElement('div');
             div.className = 'item reveal';
             
-            const previewUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,w_700,h_700,g_auto,f_auto,q_auto/v${res.version}/${res.public_id}.${res.format}`;
-            const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/v${res.version}/${res.public_id}.${res.format}`;
+            // ПРЕВ'Ю: 800px для чіткості в сітці
+            const previewUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,w_800,h_800,g_auto,f_auto,q_auto:good/v${res.version}/${res.public_id}.${res.format}`;
+            
+            // ПОВНЕ ФОТО: Максимальна якість для Lightbox
+            const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto:best/v${res.version}/${res.public_id}.${res.format}`;
             
             const img = document.createElement('img');
             img.src = previewUrl;
             img.loading = "lazy";
+            img.alt = "Grefle Art";
+            
             img.onclick = () => {
-                lightboxImg.src = fullUrl;
+                lightboxImg.src = fullUrl; // Завантажуємо якісну версію
                 lightbox.style.display = 'flex';
                 setTimeout(() => lightbox.classList.add('show'), 10);
             };
@@ -99,7 +104,7 @@ async function loadGallery(tag, containerId, observer) {
             observer.observe(div);
         });
     } catch (e) {
-        container.innerHTML = '<p style="opacity:0.5">Enable Resource List in Cloudinary Settings</p>';
+        container.innerHTML = '<p style="opacity:0.5; grid-column:1/-1; text-align:center;">Enable Resource List in Cloudinary Settings</p>';
     }
 }
 
@@ -122,4 +127,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const observer = initScrollReveal();
     loadGallery('photos', 'photos-grid', observer);
     loadGallery('artworks', 'drawings-grid', observer);
+    
+    // Плавний ефект нави при скролі
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('nav');
+        if (window.scrollY > 50) {
+            nav.style.padding = '0.9rem 8%';
+            nav.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)';
+        } else {
+            nav.style.padding = '1.2rem 8%';
+            nav.style.boxShadow = 'none';
+        }
+    });
 });
