@@ -100,11 +100,33 @@ async function loadGallery(tag, containerId) {
 // Закриття Lightbox
 document.getElementById('lightbox').onclick = function() { this.style.display = 'none'; };
 
+async function initSpecialBackground() {
+    const bgContainer = document.getElementById('dynamic-bg');
+    try {
+        // Запитуємо список зображень з тегом 'special'
+        const response = await fetch(`https://res.cloudinary.com/${CLOUD_NAME}/image/list/special.json`);
+        const data = await response.json();
+        
+        if (data.resources && data.resources.length > 0) {
+            // Беремо перше зображення (або випадкове: Math.floor(Math.random() * data.resources.length))
+            const res = data.resources[0];
+            const imgUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_1920/v${res.version}/${res.public_id}.${res.format}`;
+            
+            // Встановлюємо як фонове зображення
+            bgContainer.style.backgroundImage = `url('${imgUrl}')`;
+        }
+    } catch (e) {
+        console.error("Не вдалося завантажити фон з тегом 'special'", e);
+    }
+}
+
+// Додайте виклик функції в DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initLang();
     initParallax();
     initMenu();
+    initSpecialBackground(); // <--- Виклик нової функції
     loadGallery('photos', 'photos-grid');
     loadGallery('artworks', 'drawings-grid');
 });
