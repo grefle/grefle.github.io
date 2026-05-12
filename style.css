@@ -22,16 +22,21 @@ body {
     overflow-x: hidden;
 }
 
-/* === ФОН (ВИПРАВЛЕНО) === */
+/* === ФОН (ЧІТКИЙ ТА СТАТИЧНИЙ) === */
 #dynamic-bg {
     position: fixed;
-    top: -5%; left: -5%; /* Трохи більше за екран для руху паралакса */
-    width: 110%; height: 110%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: -1;
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
+    /* Розмиття прибрано, масштаб повернуто до норми */
+    filter: none;
+    transform: none;
     transition: background-image 1.2s ease-in-out;
-    will-change: transform;
 }
 
 .bg-special::after {
@@ -39,7 +44,7 @@ body {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     background: var(--bg-color);
-    opacity: 0.5; /* Ваше значення */
+    opacity: 0.5; /* Затемнення/освітлення для читабельності тексту */
     transition: background 0.4s ease;
 }
 
@@ -51,7 +56,8 @@ nav {
     z-index: 1000; border-bottom: 1px solid rgba(128,128,128,0.1);
 }
 
-.logo { font-weight: 800; font-size: 1.6rem; text-decoration: none; color: var(--text-color); }
+.logo { font-weight: 800; font-size: 1.6rem; text-decoration: none; color: var(--text-color); transition: 0.3s; }
+.logo:hover { transform: scale(1.05); }
 .logo span { color: var(--accent-color); display: inline-block; animation: pulse 2s infinite; }
 
 .nav-links { display: flex; list-style: none; gap: 2.5rem; }
@@ -73,7 +79,7 @@ header {
     position: relative; z-index: 10;
 }
 .header-content { text-align: center; max-width: 800px; }
-h1 { font-size: clamp(2.5rem, 8vw, 5rem); margin-bottom: 1rem; font-weight: 800; }
+h1 { font-size: clamp(2.5rem, 8vw, 5rem); margin-bottom: 1rem; font-weight: 800; line-height: 1.1; }
 .gradient-text { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
 .socials { display: flex; gap: 1.5rem; justify-content: center; margin-top: 2rem; }
@@ -100,6 +106,7 @@ h1 { font-size: clamp(2.5rem, 8vw, 5rem); margin-bottom: 1rem; font-weight: 800;
         padding: 2rem 0; text-align: center;
     }
     .nav-links.active { display: flex; }
+    header { padding-top: 140px; }
 }
 
 #lightbox {
