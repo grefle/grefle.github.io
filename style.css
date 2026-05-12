@@ -23,13 +23,32 @@ body {
 }
 
 /* === ФОН === */
-.bg-visuals {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: -1; filter: blur(100px); opacity: 0.5; pointer-events: none;
+/* Новий фон з картинкою */
+#dynamic-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image 1s ease-in-out;
 }
-.blob { position: absolute; border-radius: 50%; background: var(--gradient); transition: transform 0.3s ease-out; }
-.blob-1 { width: 400px; height: 400px; top: -100px; left: -100px; }
-.blob-2 { width: 500px; height: 500px; bottom: -100px; right: -100px; }
+
+/* Ефект накладання, щоб текст було видно краще */
+.bg-special::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-color);
+    opacity: 0.85; /* Регулюйте прозорість тут (0.1 - видно фото, 0.9 - майже білий фон) */
+}
+
+[data-theme="dark"] .bg-special::after {
+    opacity: 0.92; /* Для темної теми краще зробити фон темнішим */
+}
 
 /* === НАВІГАЦІЯ === */
 nav {
