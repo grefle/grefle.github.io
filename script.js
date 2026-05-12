@@ -21,23 +21,11 @@ async function initSpecialBackground() {
         const response = await fetch(`https://res.cloudinary.com/${CLOUD_NAME}/image/list/special.json`);
         const data = await response.json();
         if (data.resources && data.resources.length > 0) {
-            // Беремо перше фото з тегом special
             const res = data.resources[0];
             const imgUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_1920/v${res.version}/${res.public_id}.${res.format}`;
             bgContainer.style.backgroundImage = `url('${imgUrl}')`;
         }
-    } catch (e) { console.error("Bg load error:", e); }
-}
-
-// Паралакс тепер рухає весь фон
-function initParallax() {
-    const bg = document.getElementById('dynamic-bg');
-    document.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth) - 0.5;
-        const y = (e.clientY / window.innerHeight) - 0.5;
-        // Рухаємо фон у протилежний бік для ефекту глибини
-        bg.style.transform = `translate(${x * -20}px, ${y * -20}px) scale(1.05)`;
-    });
+    } catch (e) { console.error("Background error:", e); }
 }
 
 function initTheme() {
@@ -46,7 +34,9 @@ function initTheme() {
     const apply = (t) => {
         html.setAttribute('data-theme', t);
         localStorage.setItem('theme', t);
-        btn.querySelector('i').className = t === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        const icon = btn.querySelector('i');
+        icon.className = t === 'light' ? 'fas fa-moon theme-rotate' : 'fas fa-sun theme-rotate';
+        setTimeout(() => icon.classList.remove('theme-rotate'), 500);
     };
     apply(localStorage.getItem('theme') || 'light');
     btn.onclick = () => apply(html.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
@@ -64,8 +54,11 @@ function initLang() {
     };
     update(localStorage.getItem('lang') || 'ua');
     btn.onclick = () => {
-        const next = localStorage.getItem('lang') === 'ua' ? 'en' : 'ua';
-        update(next);
+        btn.style.transform = 'scale(0.8)';
+        setTimeout(() => {
+            btn.style.transform = 'scale(1)';
+            update(localStorage.getItem('lang') === 'ua' ? 'en' : 'ua');
+        }, 150);
     };
 }
 
@@ -109,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initLang();
     initSpecialBackground();
-    initParallax();
     initMenu();
     loadGallery('photos', 'photos-grid');
     loadGallery('artworks', 'drawings-grid');
