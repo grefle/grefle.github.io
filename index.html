@@ -9,7 +9,6 @@
 </head>
 <body>
 
-    <!-- Анімований фон -->
     <div class="bg-visuals">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
@@ -17,13 +16,16 @@
     </div>
 
     <nav>
-        <div class="logo">GREFLE<span>.</span></div>
+        <a href="#about" class="logo">GREFLE<span>.</span></a>
+        
         <div class="menu-toggle" id="mobile-menu"><i class="fas fa-bars"></i></div>
+        
         <ul class="nav-links">
             <li><a href="#about" data-i18n="nav_about">Про мене</a></li>
             <li><a href="#photos" data-i18n="nav_photos">Фотографії</a></li>
             <li><a href="#drawings" data-i18n="nav_drawings">Малюнки</a></li>
         </ul>
+        
         <div class="nav-controls">
             <button id="lang-toggle" class="lang-btn">EN</button>
             <button id="theme-toggle" title="Змінити тему"><i class="fas fa-moon"></i></button>
@@ -61,6 +63,8 @@
     <footer>
         <p data-i18n="footer">&copy; 2026 Grefle. Створено з акцентом на візуальну чистоту.</p>
     </footer>
+
+    <div id="lightbox"><img src=""></div>
 
     <script src="script.js"></script>
 </body>
