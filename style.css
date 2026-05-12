@@ -43,7 +43,7 @@ body {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     background: var(--bg-color);
-    opacity: 0.85; /* Регулюйте прозорість тут (0.1 - видно фото, 0.9 - майже білий фон) */
+    opacity: 0.5; /* Регулюйте прозорість тут (0.1 - видно фото, 0.9 - майже білий фон) */
 }
 
 [data-theme="dark"] .bg-special::after {
