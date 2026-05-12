@@ -14,142 +14,122 @@ const translations = {
     }
 };
 
-/** Інтерактивність: 3D Tilt та Паралакс **/
-function initInteractivity() {
-    // Паралакс фонових блобів
+// Анімована тема
+function initTheme() {
+    const btn = document.querySelector('#theme-toggle');
+    const html = document.documentElement;
+
+    const apply = (t) => {
+        html.setAttribute('data-theme', t);
+        localStorage.setItem('theme', t);
+        
+        const icon = btn.querySelector('i');
+        icon.classList.add('theme-rotate');
+        icon.className = t === 'light' ? 'fas fa-moon theme-rotate' : 'fas fa-sun theme-rotate';
+        
+        setTimeout(() => icon.classList.remove('theme-rotate'), 500);
+    };
+
+    apply(localStorage.getItem('theme') || 'light');
+    btn.onclick = () => apply(html.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+}
+
+// Анімована зміна мови
+function initLang() {
+    const btn = document.querySelector('#lang-toggle');
+    const update = (l) => {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[l][key]) el.innerText = translations[l][key];
+        });
+        btn.innerText = l === 'ua' ? 'EN' : 'UA';
+        localStorage.setItem('lang', l);
+    };
+
+    update(localStorage.getItem('lang') || 'ua');
+    
+    btn.onclick = () => {
+        btn.style.transform = 'scale(0.8)';
+        setTimeout(() => {
+            btn.style.transform = 'scale(1)';
+            const next = localStorage.getItem('lang') === 'ua' ? 'en' : 'ua';
+            update(next);
+        }, 150);
+    };
+}
+
+// Паралакс фону
+function initParallax() {
     document.addEventListener('mousemove', (e) => {
         const x = (e.clientX / window.innerWidth) - 0.5;
         const y = (e.clientY / window.innerHeight) - 0.5;
-        
-        document.querySelectorAll('.blob').forEach((blob, index) => {
-            const speed = (index + 1) * 30;
+        document.querySelectorAll('.blob').forEach((blob, i) => {
+            const speed = (i + 1) * 40;
             blob.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
         });
     });
-
-    // 3D ефект для карток (тільки для десктопів)
-    if (window.innerWidth > 768) {
-        document.addEventListener('mousemove', (e) => {
-            document.querySelectorAll('.item').forEach(item => {
-                const rect = item.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
-                    const dx = (x - rect.width / 2) / 10;
-                    const dy = (y - rect.height / 2) / 10;
-                    item.style.transform = `perspective(1000px) rotateX(${-dy}deg) rotateY(${dx}deg) translateY(-10px)`;
-                } else {
-                    item.style.transform = '';
-                }
-            });
-        });
-    }
 }
 
-/** Мобільне меню **/
-function initMobileMenu() {
-    const menuToggle = document.getElementById('mobile-menu');
-    const navLinks = document.querySelector('.nav-links');
-    
-    menuToggle?.addEventListener('click', () => {
-        navLinks.classList.toggle('active');
-        menuToggle.querySelector('i').classList.toggle('fa-bars');
-        menuToggle.querySelector('i').classList.toggle('fa-times');
-    });
-
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', () => {
-            navLinks.classList.remove('active');
-            menuToggle.querySelector('i').className = 'fas fa-bars';
-        });
-    });
-}
-
-/** Тема та Мова **/
-function initCore() {
-    // Тема
-    const themeBtn = document.querySelector('#theme-toggle');
-    const applyTheme = (t) => {
-        document.documentElement.setAttribute('data-theme', t);
-        localStorage.setItem('theme', t);
-        themeBtn.innerHTML = t === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+// Мобільне меню
+function initMenu() {
+    const toggle = document.querySelector('#mobile-menu');
+    const links = document.querySelector('.nav-links');
+    toggle.onclick = () => {
+        links.classList.toggle('active');
+        const icon = toggle.querySelector('i');
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-times');
     };
-    applyTheme(localStorage.getItem('theme') || 'light');
-    themeBtn.onclick = () => applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
-
-    // Мова
-    const langBtn = document.querySelector('#lang-toggle');
-    const updateLang = (lang) => {
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (translations[lang][key]) el.innerText = translations[lang][key];
-        });
-        langBtn.innerText = lang === 'ua' ? 'EN' : 'UA';
-        localStorage.setItem('language', lang);
-    };
-    updateLang(localStorage.getItem('language') || 'ua');
-    langBtn.onclick = () => updateLang(localStorage.getItem('language') === 'ua' ? 'en' : 'ua');
 }
 
-/** Галерея **/
-const lightbox = document.createElement('div');
-lightbox.id = 'lightbox';
-const lightboxImg = document.createElement('img');
-lightbox.appendChild(lightboxImg);
-document.body.appendChild(lightbox);
-
-lightbox.onclick = () => {
-    lightbox.classList.remove('show');
-    setTimeout(() => lightbox.style.display = 'none', 400);
-};
-
+// Завантаження галереї Cloudinary
 async function loadGallery(tag, containerId) {
     const container = document.getElementById(containerId);
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-
     try {
         const response = await fetch(`https://res.cloudinary.com/${CLOUD_NAME}/image/list/${tag}.json`);
         const data = await response.json();
-        
         container.innerHTML = '';
+        
         data.resources.forEach(res => {
             const div = document.createElement('div');
-            div.className = 'item reveal';
-            
-            const previewUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,w_700,h_700,g_auto,f_auto,q_auto/v${res.version}/${res.public_id}.${res.format}`;
-            const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/v${res.version}/${res.public_id}.${res.format}`;
-            
+            div.className = 'item';
             const img = document.createElement('img');
-            img.src = previewUrl;
+            img.src = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,w_700,h_700,g_auto,f_auto,q_auto/v${res.version}/${res.public_id}.${res.format}`;
             img.loading = "lazy";
-            img.onclick = (e) => {
-                e.stopPropagation();
-                lightboxImg.src = fullUrl;
-                lightbox.style.display = 'flex';
-                setTimeout(() => lightbox.classList.add('show'), 10);
+            
+            img.onclick = () => {
+                const lb = document.getElementById('lightbox');
+                const lbImg = lb.querySelector('img');
+                lbImg.src = img.src.replace('w_700,h_700', 'w_1400');
+                lb.style.display = 'flex';
+                setTimeout(() => lb.classList.add('show'), 10);
             };
 
             div.appendChild(img);
             container.appendChild(div);
-            observer.observe(div);
         });
     } catch (e) {
-        container.innerHTML = '<p style="grid-column:1/-1; opacity:0.5">Перевірте налаштування Cloudinary (Resource List)</p>';
+        container.innerHTML = '<p>Потрібно ввімкнути "Resource List" у Cloudinary</p>';
     }
 }
 
+// Lightbox
+const lb = document.getElementById('lightbox') || document.createElement('div');
+if (!document.getElementById('lightbox')) {
+    lb.id = 'lightbox';
+    lb.innerHTML = '<img src="">';
+    document.body.appendChild(lb);
+}
+lb.onclick = () => {
+    lb.classList.remove('show');
+    setTimeout(() => lb.style.display = 'none', 400);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    initCore();
-    initMobileMenu();
-    initInteractivity();
+    initTheme();
+    initLang();
+    initParallax();
+    initMenu();
     loadGallery('photos', 'photos-grid');
     loadGallery('artworks', 'drawings-grid');
 });
