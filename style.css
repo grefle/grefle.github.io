@@ -13,7 +13,7 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; } /* Плавна прокрутка до розділів */
+html { scroll-behavior: smooth; }
 
 body {
     font-family: 'Inter', sans-serif;
@@ -22,32 +22,25 @@ body {
     overflow-x: hidden;
 }
 
-/* === ФОН === */
-/* Новий фон з картинкою */
+/* === ФОН (ВИПРАВЛЕНО) === */
 #dynamic-bg {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: -5%; left: -5%; /* Трохи більше за екран для руху паралакса */
+    width: 110%; height: 110%;
     z-index: -1;
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
-    transition: background-image 1s ease-in-out;
+    transition: background-image 1.2s ease-in-out;
+    will-change: transform;
 }
 
-/* Ефект накладання, щоб текст було видно краще */
 .bg-special::after {
     content: '';
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     background: var(--bg-color);
-    opacity: 0.5; /* Регулюйте прозорість тут (0.1 - видно фото, 0.9 - майже білий фон) */
-}
-
-[data-theme="dark"] .bg-special::after {
-    opacity: 0.92; /* Для темної теми краще зробити фон темнішим */
+    opacity: 0.5; /* Ваше значення */
+    transition: background 0.4s ease;
 }
 
 /* === НАВІГАЦІЯ === */
@@ -58,49 +51,21 @@ nav {
     z-index: 1000; border-bottom: 1px solid rgba(128,128,128,0.1);
 }
 
-/* Логотип */
-.logo { 
-    font-weight: 800; 
-    font-size: 1.6rem; 
-    text-decoration: none; 
-    color: var(--text-color);
-    transition: 0.3s;
-}
-.logo:hover { transform: scale(1.05); }
+.logo { font-weight: 800; font-size: 1.6rem; text-decoration: none; color: var(--text-color); }
 .logo span { color: var(--accent-color); display: inline-block; animation: pulse 2s infinite; }
 
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-}
-
-/* Меню (ВИПРАВЛЕНО: ТОЧОК НЕ БУДЕ) */
-.nav-links { 
-    display: flex; 
-    list-style: none; /* Прибирає точки */
-    gap: 2.5rem; 
-    margin: 0; padding: 0;
-}
-
-.nav-links a { 
-    text-decoration: none; 
-    color: var(--text-color); 
-    font-weight: 500; 
-    opacity: 0.7; 
-    transition: 0.3s;
-}
+.nav-links { display: flex; list-style: none; gap: 2.5rem; }
+.nav-links a { text-decoration: none; color: var(--text-color); font-weight: 500; opacity: 0.7; transition: 0.3s; }
 .nav-links a:hover { opacity: 1; color: var(--accent-color); }
 
-/* Кнопки теми/мови */
 .nav-controls { display: flex; align-items: center; gap: 15px; }
 .nav-controls button {
     background: rgba(128, 128, 128, 0.1); border: none; padding: 8px 15px;
-    border-radius: 12px; color: var(--text-color); font-weight: 700;
-    cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-radius: 12px; color: var(--text-color); font-weight: 700; cursor: pointer; transition: 0.3s;
 }
 .nav-controls button:hover { transform: scale(1.1); background: var(--accent-color); color: #000; }
 
-/* === HEADER (Про мене) === */
+/* === HEADER === */
 header {
     min-height: 100vh;
     display: flex; align-items: center; justify-content: center;
@@ -108,17 +73,16 @@ header {
     position: relative; z-index: 10;
 }
 .header-content { text-align: center; max-width: 800px; }
-h1 { font-size: clamp(2.5rem, 8vw, 5rem); margin-bottom: 1rem; line-height: 1.1; font-weight: 800; }
+h1 { font-size: clamp(2.5rem, 8vw, 5rem); margin-bottom: 1rem; font-weight: 800; }
 .gradient-text { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-/* Соцмережі */
-.socials { display: flex; gap: 1.5rem; justify-content: center; margin-top: 2.5rem; }
+.socials { display: flex; gap: 1.5rem; justify-content: center; margin-top: 2rem; }
 .social-link {
     width: 50px; height: 50px; border-radius: 15px; background: rgba(128,128,128,0.1);
     color: var(--text-color); display: flex; align-items: center; justify-content: center;
     text-decoration: none; transition: 0.4s;
 }
-.social-link:hover { transform: translateY(-8px); background: var(--gradient); color: #000; }
+.social-link:hover { transform: translateY(-5px); background: var(--accent-color); color: #000; }
 
 /* === ГАЛЕРЕЯ === */
 .gallery-section { padding: 5rem 8%; position: relative; z-index: 5; }
@@ -133,14 +97,11 @@ h1 { font-size: clamp(2.5rem, 8vw, 5rem); margin-bottom: 1rem; line-height: 1.1;
     .nav-links {
         display: none; flex-direction: column; position: absolute;
         top: 80px; left: 0; width: 100%; background: var(--nav-bg);
-        padding: 2rem 0; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.1);
+        padding: 2rem 0; text-align: center;
     }
     .nav-links.active { display: flex; }
-    header { padding-top: 140px; }
-    h1 { font-size: 2.6rem; }
 }
 
-/* Lightbox */
 #lightbox {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.9); z-index: 2000; display: none;
@@ -148,4 +109,4 @@ h1 { font-size: clamp(2.5rem, 8vw, 5rem); margin-bottom: 1rem; line-height: 1.1;
 }
 #lightbox img { max-width: 90%; max-height: 80vh; border-radius: 15px; }
 
-footer { padding: 4rem; text-align: center; opacity: 0.5; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
