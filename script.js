@@ -14,22 +14,44 @@ const translations = {
     }
 };
 
-// Зміна теми
+// Завантаження фону з тегом 'special'
+async function initSpecialBackground() {
+    const bgContainer = document.getElementById('dynamic-bg');
+    try {
+        const response = await fetch(`https://res.cloudinary.com/${CLOUD_NAME}/image/list/special.json`);
+        const data = await response.json();
+        if (data.resources && data.resources.length > 0) {
+            // Беремо перше фото з тегом special
+            const res = data.resources[0];
+            const imgUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_1920/v${res.version}/${res.public_id}.${res.format}`;
+            bgContainer.style.backgroundImage = `url('${imgUrl}')`;
+        }
+    } catch (e) { console.error("Bg load error:", e); }
+}
+
+// Паралакс тепер рухає весь фон
+function initParallax() {
+    const bg = document.getElementById('dynamic-bg');
+    document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth) - 0.5;
+        const y = (e.clientY / window.innerHeight) - 0.5;
+        // Рухаємо фон у протилежний бік для ефекту глибини
+        bg.style.transform = `translate(${x * -20}px, ${y * -20}px) scale(1.05)`;
+    });
+}
+
 function initTheme() {
     const btn = document.querySelector('#theme-toggle');
     const html = document.documentElement;
     const apply = (t) => {
         html.setAttribute('data-theme', t);
         localStorage.setItem('theme', t);
-        const icon = btn.querySelector('i');
-        icon.className = t === 'light' ? 'fas fa-moon theme-rotate' : 'fas fa-sun theme-rotate';
-        setTimeout(() => icon.classList.remove('theme-rotate'), 500);
+        btn.querySelector('i').className = t === 'light' ? 'fas fa-moon' : 'fas fa-sun';
     };
     apply(localStorage.getItem('theme') || 'light');
     btn.onclick = () => apply(html.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
 }
 
-// Зміна мови
 function initLang() {
     const btn = document.querySelector('#lang-toggle');
     const update = (l) => {
@@ -42,26 +64,11 @@ function initLang() {
     };
     update(localStorage.getItem('lang') || 'ua');
     btn.onclick = () => {
-        btn.style.transform = 'scale(0.8)';
-        setTimeout(() => {
-            btn.style.transform = 'scale(1)';
-            update(localStorage.getItem('lang') === 'ua' ? 'en' : 'ua');
-        }, 150);
+        const next = localStorage.getItem('lang') === 'ua' ? 'en' : 'ua';
+        update(next);
     };
 }
 
-// Паралакс фону
-function initParallax() {
-    document.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth) - 0.5;
-        const y = (e.clientY / window.innerHeight) - 0.5;
-        document.querySelectorAll('.blob').forEach((blob, i) => {
-            blob.style.transform = `translate(${x * (i+1)*30}px, ${y * (i+1)*30}px)`;
-        });
-    });
-}
-
-// Мобільне меню
 function initMenu() {
     const toggle = document.querySelector('#mobile-menu');
     const links = document.querySelector('.nav-links');
@@ -74,7 +81,6 @@ function initMenu() {
     }
 }
 
-// Завантаження галереї
 async function loadGallery(tag, containerId) {
     const container = document.getElementById(containerId);
     try {
@@ -94,39 +100,17 @@ async function loadGallery(tag, containerId) {
             div.appendChild(img);
             container.appendChild(div);
         });
-    } catch (e) { console.error("Cloudinary error", e); }
+    } catch (e) { console.error(e); }
 }
 
-// Закриття Lightbox
 document.getElementById('lightbox').onclick = function() { this.style.display = 'none'; };
 
-async function initSpecialBackground() {
-    const bgContainer = document.getElementById('dynamic-bg');
-    try {
-        // Запитуємо список зображень з тегом 'special'
-        const response = await fetch(`https://res.cloudinary.com/${CLOUD_NAME}/image/list/special.json`);
-        const data = await response.json();
-        
-        if (data.resources && data.resources.length > 0) {
-            // Беремо перше зображення (або випадкове: Math.floor(Math.random() * data.resources.length))
-            const res = data.resources[0];
-            const imgUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_1920/v${res.version}/${res.public_id}.${res.format}`;
-            
-            // Встановлюємо як фонове зображення
-            bgContainer.style.backgroundImage = `url('${imgUrl}')`;
-        }
-    } catch (e) {
-        console.error("Не вдалося завантажити фон з тегом 'special'", e);
-    }
-}
-
-// Додайте виклик функції в DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initLang();
+    initSpecialBackground();
     initParallax();
     initMenu();
-    initSpecialBackground(); // <--- Виклик нової функції
     loadGallery('photos', 'photos-grid');
     loadGallery('artworks', 'drawings-grid');
 });
